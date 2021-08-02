@@ -1,4 +1,4 @@
-package com.wedul.websocket;
+package com.wedul.websocket.config;
 
 import com.wedul.websocket.handler.MyHandler;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +16,7 @@ public class WebSocketRequestConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(myHandler(), "/myHandler")
+        registry.addHandler(myHandler(), "/app/**", "/topic")
             // interceptor
             .addInterceptors(new HttpSessionHandshakeInterceptor())
             // 허용 도메인

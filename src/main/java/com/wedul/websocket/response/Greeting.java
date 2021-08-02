@@ -1,4 +1,4 @@
-package com.wedul.websocket;
+package com.wedul.websocket.response;
 
 import lombok.Getter;
 

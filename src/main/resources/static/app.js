@@ -1,4 +1,5 @@
-var stompClient = null;
+let wedulStompClient = null;
+let chulStompClient = null;
 
 function setConnected(connected) {
     $("#connect").prop("disabled", connected);
@@ -12,53 +13,149 @@ function setConnected(connected) {
     $("#greetings").html("");
 }
 
-function connect() {
-    var socket = new SockJS('/gs-guide-websocket');
-    stompClient = Stomp.over(socket);
-    stompClient.heartbeat.outgoing = 0;
-    stompClient.connect({}, function (frame) {
+function connect(user) {
+    let socket = new SockJS('/gs-guide-websocket');
+    let client = Stomp.over(socket);
+    client.heartbeat.outgoing = 0;
+    client.heartbeat.incoming = 0;
+    client.connect({
+        user
+    }, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/greetings', function (greeting) {
+        client.subscribe('/topic/greetings', function (greeting) {
             console.log(greeting)
-            showGreeting(JSON.parse(greeting.body).content);
+            showGreeting("[hello] receive User : " + user + " " + JSON.parse(greeting.body).content);
         });
 
-        stompClient.subscribe('/direct/wedul', function (greeting) {
+        // direct로 topic에게 보내기
+        client.subscribe('/direct/people', function (greeting) {
             console.log(greeting)
-            showGreeting(JSON.parse(greeting.body).content);
+            showGreeting("[direct] receive User : " + user + " " + JSON.parse(greeting.body).content);
         });
-        stompClient.heartbeat.outgoing = 0;
+
+        // user 메시지
+        client.subscribe('/user/data', function (greeting) {
+            console.log(greeting)
+            showPrivateMessage("[specific user] receive User : " + user + ", message : " + JSON.parse(greeting.body).content);
+        })
+
+        // user 메시지
+        client.subscribe('/data', function (greeting) {
+            console.log(greeting)
+            showPrivateMessage("[specific user] receive User : " + user + ", message : " + JSON.parse(greeting.body).content);
+        })
+
+        // user 메시지
+        console.log('/user/${user}/data');
+        client.subscribe(`/user/${user}/data`, function (greeting) {
+            console.log(greeting)
+            showPrivateMessage("[specific user(path-messageTemplate)] receive User : " + user + ", message : " + JSON.parse(greeting.body).content);
+        })
+
+        // user 메시지
+        client.subscribe(`/user/${user}/message`, function (n) {
+            console.log(n);
+            showPrivateMessage("[specific user(path-direct)] receive User : " + user + ", message : " + JSON.parse(n.body).message);
+        })
+
+        // 에러메시지 핸들링
+        client.subscribe('/user/queue/errors', function (message) {
+            console.log(message);
+            alert("[error] receive User : " + user + " "  + message);
+        });
+        client.heartbeat.outgoing = 0;
     });
+
+    return client;
 }
 
-function disconnect() {
-    if (stompClient !== null) {
-        stompClient.disconnect();
+function disconnect(client, user) {
+    if (client !== null) {
+        client.disconnect();
     }
     setConnected(false);
-    console.log("Disconnected");
+    console.log(user + " Disconnected");
 }
 
-function sendName() {
-    stompClient.send("/app/hello", {}, JSON.stringify({'name': $("#name").val()}));
+// common send
+function sendName(client) {
+    // app prefix를 달고 있고 MessageMapping에 hello로 되어있는곳에 추가
+    client.send("/app/hello", {}, JSON.stringify({'name': $("#name").val()}));
 }
 
-function sendDirect() {
-    stompClient.send("/direct/wedul", {}, JSON.stringify({'content': $("#name").val()}));
+function sendDirect(client) {
+    // 특정 토픽에 다이렉트로 보내기
+    client.send("/direct/people", {}, JSON.stringify({'content': $("#name").val()}));
+}
+
+function sendUserDirectPath(client, user) {
+    client.send(`/user/${user}/message`, {}, JSON.stringify({
+        'message': $("#message").val()
+    }));
+}
+
+function sendUserAnnotation(client, user) {
+    client.send(`/app/message`, {}, JSON.stringify({
+        'message': $("#message").val(),
+        'name': user
+    }));
+}
+
+function sendMessageTemplateToUser(client, user) {
+    client.send("/app/message/sendToUser", {}, JSON.stringify({
+        'message': $("#message").val(),
+        'targetUserName': user
+    }));
 }
 
 function showGreeting(message) {
     $("#greetings").append("<tr><td>" + message + "</td></tr>");
 }
 
+function showPrivateMessage(message) {
+    $("#greetings").append("<tr><td>" + "private message : " + message + "</td></tr>");
+}
+
 $(function () {
     $("form").on('submit', function (e) {
         e.preventDefault();
     });
-    $( "#connect" ).click(function() { connect(); });
-    $( "#disconnect" ).click(function() { disconnect(); });
-    $( "#send" ).click(function() { sendName(); });
-    $( "#sendDirect" ).click(function() { sendDirect(); });
+    $( "#connect" ).click(function() {
+        wedulStompClient = connect("wedul");
+        chulStompClient = connect("chul");
+    });
+    $( "#disconnect" ).click(function() {
+        disconnect(wedulStompClient, "wedul");
+        disconnect(chulStompClient, "chul");
+    });
+    $( "#send" ).click(function() {
+        sendName(wedulStompClient);
+        sendName(chulStompClient);
+    });
+    $( "#sendDirect" ).click(function() {
+        sendDirect(wedulStompClient);
+        sendDirect(chulStompClient);
+    });
+    $("#sendMessageDirectPath").click(function () {
+        let sendUserName = $("#sendUserName option:selected").val();
+        let receiveUserName = $("#receiveUserName option:selected").val();
 
+        let client = sendUserName === 'wedul' ? wedulStompClient : chulStompClient;
+        sendUserDirectPath(client, receiveUserName);
+    });
+    $("#sendMessageTemplateToUser").click(function () {
+        let sendUserName = $("#sendUserName option:selected").val();
+        let receiveUserName = $("#receiveUserName option:selected").val();
+
+        let client = sendUserName === 'wedul' ? wedulStompClient : chulStompClient;
+        sendMessageTemplateToUser(client, receiveUserName);
+    });
+    $("#sendUserAnnotation").click(function () {
+        let sendUserName = $("#sendUserName option:selected").val();
+        let receiveUserName = $("#receiveUserName option:selected").val();
+
+        let client = sendUserName === 'wedul' ? wedulStompClient : chulStompClient;
+        sendUserAnnotation(client, receiveUserName);
+    });
 });

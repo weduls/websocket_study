@@ -35,6 +35,27 @@
                 <button id="sendDirect" class="btn btn-default" type="submit">Direct Send</button>
             </form>
         </div>
+        <div class="col-md-6">
+            <form class="form-inline">
+                <label for="sendUserName">sender : </label>
+                <select id="sendUserName">
+                    <option value="wedul">wedul</option>
+                    <option value="chul" selected="selected">chul</option>
+                </select>
+                <label for="receiveUserName">receiver : </label>
+                <select id="receiveUserName">
+                    <option value="wedul">wedul</option>
+                    <option value="chul" selected="selected">chul</option>
+                </select>
+                <div class="form-group">
+                    <label for="message">message : </label>
+                    <input type="text" id="message" class="form-control" placeholder="message..">
+                </div>
+                <button id="sendUserAnnotation" class="btn btn-default" type="submit">Send Annotation</button>
+                <button id="sendMessageDirectPath" class="btn btn-default" type="submit">Send Direct Path</button>
+                <button id="sendMessageTemplateToUser" class="btn btn-default" type="submit">SendMessageTemplateToUser</button>
+            </form>
+        </div>
     </div>
     <div class="row">
         <div class="col-md-12">

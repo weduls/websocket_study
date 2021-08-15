@@ -35,28 +35,16 @@ function connect(user) {
         });
 
         // user 메시지
-        client.subscribe('/user/data', function (greeting) {
+        // user 메시지
+        client.subscribe('/user/topic/data', function (greeting) {
             console.log(greeting)
-            showPrivateMessage("[specific user] receive User : " + user + ", message : " + JSON.parse(greeting.body).content);
+            showPrivateMessage("[specific user - annotation] receive User : " + user + ", message : " + JSON.parse(greeting.body).content);
         })
 
         // user 메시지
-        client.subscribe('/data', function (greeting) {
-            console.log(greeting)
-            showPrivateMessage("[specific user] receive User : " + user + ", message : " + JSON.parse(greeting.body).content);
-        })
-
-        // user 메시지
-        console.log('/user/${user}/data');
-        client.subscribe(`/user/${user}/data`, function (greeting) {
-            console.log(greeting)
-            showPrivateMessage("[specific user(path-messageTemplate)] receive User : " + user + ", message : " + JSON.parse(greeting.body).content);
-        })
-
-        // user 메시지
-        client.subscribe(`/user/${user}/message`, function (n) {
+        client.subscribe(`/user/topic/message`, function (n) {
             console.log(n);
-            showPrivateMessage("[specific user(path-direct)] receive User : " + user + ", message : " + JSON.parse(n.body).message);
+            showPrivateMessage("[specific user - messaging] receive User : " + user + ", message : " + JSON.parse(n.body).message);
         })
 
         // 에러메시지 핸들링

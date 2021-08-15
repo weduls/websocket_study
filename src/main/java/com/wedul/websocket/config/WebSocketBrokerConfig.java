@@ -1,5 +1,6 @@
 package com.wedul.websocket.config;
 
+import com.wedul.websocket.handler.CustomHandShakeHandler;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -30,7 +31,7 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         //
-        config.enableSimpleBroker("/topic", "/direct", "/user")
+        config.enableSimpleBroker("/topic", "/direct")
             .setTaskScheduler(taskScheduler())
             // 안쓰면 그냥 10s 씩 (inbound, outbound)
             .setHeartbeatValue(new long[] {3000L, 3000L});
@@ -48,7 +49,9 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/gs-guide-websocket").withSockJS();
+        registry.addEndpoint("/gs-guide-websocket")
+//                .setHandshakeHandler(new CustomHandShakeHandler())
+                .withSockJS();
     }
 
     @Override

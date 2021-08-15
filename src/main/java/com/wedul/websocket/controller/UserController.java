@@ -19,15 +19,15 @@ public class UserController {
 
     @MessageMapping("/message")
     // simple broker를 사용하려면 Broker 설정에서 사용한 config에 맞는 값을 사용해야한다.
-    @SendToUser("/data")
-    public Greeting greeting(UserMessage message, Principal user) {
-        return new Greeting(HtmlUtils.htmlEscape(message.getMessage()));
+    @SendToUser("/topic/message")
+    public Greeting greetingMessage(UserMessage message) {
+        return new Greeting(HtmlUtils.htmlEscape("To "+ message.getTargetUserName() + ", " + message.getMessage()));
     }
 
     @MessageMapping("/message/sendToUser")
     // simple broker를 사용하려면 Broker 설정에서 사용한 config에 맞는 값을 사용해야한다.
     public void greeting(UserMessage message) {
-        messageTemplate.convertAndSendToUser(message.getTargetUserName(), "/data", new Greeting(HtmlUtils.htmlEscape(message.getMessage())));
+        messageTemplate.convertAndSendToUser(message.getTargetUserName(), "/topic/data", new Greeting(HtmlUtils.htmlEscape(message.getMessage())));
     }
 
 }

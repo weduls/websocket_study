@@ -16,11 +16,12 @@ public class WebSocketRequestConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(myHandler(), "/app/**", "/topic")
+        registry.addHandler(myHandler(), "/wedul/chat")
             // interceptor
             .addInterceptors(new HttpSessionHandshakeInterceptor())
             // 허용 도메인
             .setAllowedOrigins("*")
+            .setAllowedOriginPatterns("*")
             // fallback
             .withSockJS();
     }

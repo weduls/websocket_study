@@ -50,7 +50,7 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/gs-guide-websocket")
-//                .setHandshakeHandler(new CustomHandShakeHandler())
+                .setHandshakeHandler(new CustomHandShakeHandler())
                 .withSockJS();
     }
 
@@ -77,4 +77,5 @@ public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
             }
         });
     }
+
 }

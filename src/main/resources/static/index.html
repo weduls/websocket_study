@@ -9,6 +9,7 @@
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
     <script src="/app.js"></script>
 </head>
+<meta charset="utf-8">
 <body>
 <noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
     enabled. Please enable
@@ -19,8 +20,8 @@
             <form class="form-inline">
                 <div class="form-group">
                     <label for="connect">WebSocket connection:</label>
-                    <button id="connect" class="btn btn-default" type="submit">Connect</button>
-                    <button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">Disconnect
+                    <button id="connect" class="btn btn-default" type="submit">주문시작</button>
+                    <button id="disconnect" class="btn btn-default" type="submit" disabled="disabled">주문종료
                     </button>
                 </div>
             </form>
@@ -29,13 +30,13 @@
     <div class="row">
         <div class="col-md-12">
             <div>
-                <span>wedul 1 : </span> <span class="wedul">0</span>
+                <span>고객 이름 : wedul, device : 1, 배달 예상 시간 : </span> <span class="wedul">0</span>
             </div>
             <div>
-                <span>wedul 2 : </span> <span class="wedul">0</span>
+                <span>고객 이름 : wedul, device : 2, 배달 예상 시간 : </span> <span class="wedul">0</span>
             </div>
             <div>
-                <span>chul 1 : </span> <span class="chul">0</span>
+                <span>고객 이름 : chul, device : 1, 배달 예상 시간 : </span> <span class="chul">0</span>
             </div>
         </div>
     </div>

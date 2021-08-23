@@ -10,14 +10,14 @@ public class SubscribeDto {
 
     private SubscribeType type;
     private String name;
-    private int count;
+    private int time;
     private String message;
 
     @Builder
-    public SubscribeDto(SubscribeType type, String name, int count, String message) {
+    public SubscribeDto(SubscribeType type, String name, int time, String message) {
         this.type = type;
         this.name = name;
-        this.count = count;
+        this.time = time;
         this.message = message;
     }
 }

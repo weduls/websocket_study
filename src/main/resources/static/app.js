@@ -26,13 +26,13 @@ function connect(user) {
         console.log('Connected: ' + frame);
         // user 메시지
         client.subscribe('/user/topic/data', function (message) {
-            $('.' + user).text(JSON.parse(message.body).count);
+            $('.' + user).text(JSON.parse(message.body).time);
         })
 
         // broadcast message
         client.subscribe('/topic/message', function (message) {
             console.log(JSON.parse(message.body).message);
-            alert(message);
+            alert(JSON.parse(message.body).message);
         });
 
         // 에러메시지 핸들링
@@ -52,14 +52,6 @@ function disconnect(client, user) {
     }
     setConnected(false);
     console.log(user + " Disconnected");
-}
-
-function showGreeting(message) {
-    $("#greetings").append("<tr><td>" + message + "</td></tr>");
-}
-
-function showPrivateMessage(message) {
-    $("#greetings").append("<tr><td>" + "private message : " + message + "</td></tr>");
 }
 
 $(function () {

@@ -16,12 +16,12 @@
 
 package com.wedul.websocket.config;
 
-import com.wedul.websocket.handler.RedisSubscriber;
-import com.wedul.websocket.handler.WebSocketConnectHandler;
-import com.wedul.websocket.handler.WebSocketDisconnectHandler;
+import com.wedul.websocket.handler.WebSocketSubscribeHandler;
+import com.wedul.websocket.handler.WebSocketUnSubscribeHandler;
+import com.wedul.websocket.repository.UserDeliveryTimeService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.listener.RedisMessageListenerContainer;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import javax.websocket.Session;
 
@@ -35,13 +35,13 @@ import javax.websocket.Session;
 public class WebSocketHandlersConfig<S extends Session> {
 
 	@Bean
-	public WebSocketConnectHandler<S> webSocketConnectHandler(RedisMessageListenerContainer redisMessageListenerContainer, RedisSubscriber subscriber) {
-		return new WebSocketConnectHandler<>(redisMessageListenerContainer, subscriber);
+	public WebSocketSubscribeHandler<S> webSocketSubscribeHandler(UserDeliveryTimeService userDeliveryTimeService, SimpMessagingTemplate messageTemplate) {
+		return new WebSocketSubscribeHandler<>(messageTemplate, userDeliveryTimeService);
 	}
 
 	@Bean
-	public WebSocketDisconnectHandler<S> webSocketDisconnectHandler() {
-		return new WebSocketDisconnectHandler<>();
+	public WebSocketUnSubscribeHandler<S> webSocketUnSubscribeHandler(UserDeliveryTimeService userDeliveryTimeService) {
+		return new WebSocketUnSubscribeHandler<>(userDeliveryTimeService);
 	}
 
 }

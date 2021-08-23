@@ -3,6 +3,7 @@ package com.wedul.websocket.handler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wedul.websocket.dto.SubscribeDto;
 import com.wedul.websocket.dto.SubscribeType;
+import com.wedul.websocket.repository.UserDeliveryTimeService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ public class RedisSubscriber implements MessageListener {
 
     private final ObjectMapper objectMapper;
     private final SimpMessagingTemplate messageTemplate;
+    private final UserDeliveryTimeService userDeliveryTimeService;
 
     @SneakyThrows
     @Override
@@ -28,7 +30,9 @@ public class RedisSubscriber implements MessageListener {
 
         if (SubscribeType.BROAD_CAST == subscribe.getType()) {
             messageTemplate.convertAndSend("/topic/message", subscribe);
+            return;
         }
+        userDeliveryTimeService.updateTime(subscribe.getName(), subscribe.getTime());
         messageTemplate.convertAndSendToUser(subscribe.getName(), "/topic/data", subscribe);
     }
 }
